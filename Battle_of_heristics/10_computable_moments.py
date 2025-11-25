@@ -334,7 +334,7 @@ if __name__ == '__main__':
      
         base_name = os.path.basename(input_file)
         name_without_ext = os.path.splitext(base_name)[0]
-        output_file = f"submission_{name_without_ext}.txt"
+        output_file = f"./Outputs/submission_{name_without_ext}.txt"
 
     if len(sys.argv) >= 4:
         num_attempts = int(sys.argv[3])

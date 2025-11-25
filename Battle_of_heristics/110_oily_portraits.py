@@ -4,7 +4,7 @@ import sys
 import os
 from collections import defaultdict, Counter
 
-DEFAULT_INPUT_PATH = "Data/11_randomizing_paintings.txt"  # Default input file path
+DEFAULT_INPUT_PATH = "Data/110_oily_portraits.txt"  # Default input file path
 RANDOM_SEED = 42
 
 
@@ -350,6 +350,6 @@ if __name__ == '__main__':
         output_file = sys.argv[2]
     else:
         input_file = DEFAULT_INPUT_PATH
-        output_file = './Outputs/submission_11_randomizing_paintings.txt'
+        output_file = './Outputs/submission_110_oily_portraits.txt'
 
     main(input_file, output_file)

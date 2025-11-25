@@ -178,6 +178,6 @@ if __name__ == '__main__':
         output_file = sys.argv[2]
     else:
         input_file = './Data/1_binary_landscapes.txt'
-        output_file = './submission_1_binary_landscapes.txt'
+        output_file = './Outputs/submission_1_binary_landscapes.txt'
 
     main(input_file, output_file)

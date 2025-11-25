@@ -5,7 +5,7 @@ import sys
 import os
 
 
-DEFAULT_INPUT_PATH = "Data/110_oily_portraits.txt"
+DEFAULT_INPUT_PATH = "Data/0_example.txt"
 RANDOM_SEED = 42  # Set seed for reproducibility
 
 def read_input(filename):
