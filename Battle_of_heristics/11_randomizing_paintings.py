@@ -282,9 +282,8 @@ def strategy_2opt(initial_order, max_iterations=5, check_every=20):
     return result
 
 
-def winner_algorithm(frameglasses):
+def running_algorithm(frameglasses):
     """
-    Winner algorithm for randomizing paintings.
     Score: 382,926 in 2.75 seconds
     
     Steps:
@@ -320,15 +319,15 @@ def main(input_file, output_file):
     start_time = time.time()
     
     paintings = read_input(input_file)
-    print(f"   ✓ Loaded {len(paintings):,} paintings")
+    print(f"Loaded {len(paintings):,} paintings")
     
     print("Creating frameglasses...")
     frameglasses = create_frameglasses(paintings)
-    print(f"   ✓ Created {len(frameglasses):,} frameglasses")
+    print(f"Created {len(frameglasses):,} frameglasses")
     
-    print("\nRunning winner algorithm...")
+    print("\nRunning algorithm...")
     random.seed(RANDOM_SEED)
-    ordered_frames = winner_algorithm(frameglasses)
+    ordered_frames = running_algorithm(frameglasses)
     
     score = calculate_global_score(ordered_frames)
     elapsed = time.time() - start_time
