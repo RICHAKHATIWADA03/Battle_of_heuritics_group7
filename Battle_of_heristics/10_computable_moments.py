@@ -9,19 +9,24 @@ RANDOM_SEED = 42
 
 def read_input(filename):
     """
-    Reads the input file containing paintings data.
+    Read and parse the input file containing paintings data.
+
+    Input File Format:
+        Line 1: N (integer) - total number of paintings
+        Lines 2 to N+1: <orientation> <num_tags> <tag1> <tag2> ... <tagN>
 
     Args:
         filename (str): Path to the input file.
 
     Returns:
         list of dict: List of paintings, each represented as a dictionary with keys:
-            - 'id' (int): Unique identifier based on line order.
-            - 'type' (str): 'L' for landscape, 'P' for portrait.
-            - 'tags' (set of str): Set of tags describing the painting.
+            - 'id' (int): Unique identifier based on line order (0-indexed)
+            - 'type' (str): 'L' for landscape, 'P' for portrait
+            - 'tags' (set of str): Set of tags describing the painting
 
     Raises:
         SystemExit: If file not found or reading error occurs.
+
     """
     paintings = []
 
@@ -77,6 +82,57 @@ def write_output(filename, ordered_frameglasses):
         sys.exit(1)
 
 
+def create_landscape_frameglasses(paintings):
+    """
+    Creates frameglasses from landscape paintings.
+    Each landscape painting becomes a single frameglass.
+    
+    Args:
+        paintings (list of dict): List of painting dictionaries.
+    
+    Returns:
+        list of dict: Frameglasses with keys 'ids' and 'tags'.
+    """
+    frameglasses = []
+    
+    for p in paintings:
+        if p['type'] == 'L':
+            frameglasses.append({
+                'ids': [p['id']],
+                'tags': p['tags'].copy()
+            })
+    
+    return frameglasses
+
+
+def create_portrait_frameglasses(paintings):
+    """
+    Creates frameglasses from portrait paintings.
+    Portraits are paired sequentially into frameglasses.
+    If there's an odd number of portraits, the last one is discarded.
+    
+    Args:
+        paintings (list of dict): List of painting dictionaries.
+    
+    Returns:
+        list of dict: Frameglasses with keys 'ids' and 'tags'.
+    """
+    frameglasses = []
+    portraits = [p for p in paintings if p['type'] == 'P']
+    
+    # Pair portraits sequentially
+    for i in range(0, len(portraits) - 1, 2):
+        p1 = portraits[i]
+        p2 = portraits[i + 1]
+        
+        frameglasses.append({
+            'ids': [p1['id'], p2['id']],
+            'tags': p1['tags'].union(p2['tags'])
+        })
+    
+    return frameglasses
+
+
 def create_frameglasses(paintings):
     """
     Creates frameglasses from paintings.
@@ -91,29 +147,13 @@ def create_frameglasses(paintings):
     Returns:
         list of dict: Frameglasses with keys 'ids' and 'tags'.
     """
-    landscapes = [p for p in paintings if p['type'] == 'L']
-    portraits = [p for p in paintings if p['type'] == 'P']
-
-    frameglasses = []
-
-    # Convert landscapes
-    for p in landscapes:
-        frameglasses.append({
-            'ids': [p['id']],
-            'tags': p['tags'].copy()
-        })
-
-    # Pair portraits
-    for i in range(0, len(portraits) - 1, 2):
-        p1 = portraits[i]
-        p2 = portraits[i + 1]
-
-        frameglasses.append({
-            'ids': [p1['id'], p2['id']],
-            'tags': p1['tags'].union(p2['tags'])
-        })
-
-    return frameglasses
+    landscape_frameglasses = create_landscape_frameglasses(paintings)
+    portrait_frameglasses = create_portrait_frameglasses(paintings)
+    
+    # Combine both types
+    all_frameglasses = landscape_frameglasses + portrait_frameglasses
+    
+    return all_frameglasses
 
 
 def calculate_score(tags1, tags2):
@@ -265,19 +305,6 @@ def multi_start_greedy(frameglasses, seed=None, num_attempts=5):
 def main(input_file, output_file, num_attempts=5):
     """
     Main execution function for the frameglass ordering algorithm.
-    
-    Process:
-        1. Parse input file to load paintings
-        2. Convert paintings to frameglasses
-        3. Apply multi-start greedy algorithm
-        4. Calculate and display satisfaction score
-        5. Write ordered result to output file
-    
-    Args:
-        input_file (str): Path to input file with painting data.
-        output_file (str): Path where ordered output will be saved.
-        num_attempts (int): Number of greedy attempts (default 5).
-   
     """
     print("=" * 60)
     print("Multi-Start Greedy Algorithm")
@@ -316,12 +343,6 @@ def main(input_file, output_file, num_attempts=5):
 
 
 if __name__ == '__main__':
-    """
-    Command-line interface for the frameglass ordering program.
-    
-    Usage:
-        python script.py <input_file> <output_file> [num_attempts]
-    """
     if len(sys.argv) >= 2:
         input_file = sys.argv[1]
     else:

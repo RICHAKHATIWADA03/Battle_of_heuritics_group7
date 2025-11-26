@@ -7,7 +7,17 @@ import os
 RANDOM_SEED = 42
 random.seed(RANDOM_SEED)
 
+
 class Painting:
+    """
+    Represents a single painting.
+    
+    Attributes:
+        id (int): Unique identifier.
+        orientation (str): 'L' for landscape or 'P' for portrait.
+        num_of_tags (int): Number of tags.
+        tags (list): List of tag strings.
+    """
     __slots__ = ['id', 'orientation', 'num_of_tags', 'tags']
 
     def __init__(self, pid, orientation, num_of_tags, tags):
@@ -18,6 +28,15 @@ class Painting:
 
 
 def parse_input_file(file_path):
+    """
+    Parses input file and extracts paintings.
+    
+    Args:
+        file_path (str): Path to input file.
+    
+    Returns:
+        list: List of Painting objects.
+    """
     paintings = []
     with open(file_path, 'r') as file:
         n = int(file.readline())
@@ -32,6 +51,15 @@ def parse_input_file(file_path):
 
 
 def create_frameglasses(paintings):
+    """
+    Converts paintings into frameglasses (display units).
+    
+    Args:
+        paintings (list): List of Painting objects.
+    
+    Returns:
+        list: List of frameglass dictionaries with 'ids' and 'tags'.
+    """
     frameglasses_landscapes = []
     for painting in paintings:
         frameglasses_landscapes.append({
@@ -43,6 +71,15 @@ def create_frameglasses(paintings):
 
 
 def tag_frequency_index(frameglasses):
+    """
+    Builds inverted index mapping tags to frameglass indices.
+    
+    Args:
+        frameglasses (list): List of frameglasses.
+    
+    Returns:
+        dict: Mapping of tag -> set of frameglass indices.
+    """
     index = {}
     for idx, frame in enumerate(frameglasses):
         for tag in frame['tags']:
@@ -53,6 +90,15 @@ def tag_frequency_index(frameglasses):
 
 
 def tag_global_frequency(frameglasses):
+    """
+    Calculates frequency of each tag across all frameglasses.
+    
+    Args:
+        frameglasses (list): List of frameglasses.
+    
+    Returns:
+        dict: Mapping of tag -> frequency count.
+    """
     freq = {}
     for frame in frameglasses:
         for tag in frame['tags']:
@@ -61,7 +107,22 @@ def tag_global_frequency(frameglasses):
 
 
 def smart_ordering(frameglasses):
-    # Reset random seed for consistent results
+    """
+    Orders frameglasses using tag-based smart ordering.
+    
+    Algorithm:
+        1. Start with frameglass having most tags (best connectivity)
+        2. Build tag frequency index for fast lookup
+        3. At each step, find frameglass sharing tags with current
+        4. Sample up to 500 frameglasses for efficiency
+        5. Select best frameglass using score and diversity metrics
+
+    Args:
+        frameglasses (list): List of frameglasses to order.
+    
+    Returns:
+        list: Optimally ordered frameglasses.
+    """
     random.seed(RANDOM_SEED)
     
     ordered = []
@@ -69,7 +130,7 @@ def smart_ordering(frameglasses):
     index = tag_frequency_index(frameglasses)
     tag_freq = tag_global_frequency(frameglasses)
 
-    # Start with deterministic choice instead of random
+    # Start with deterministic choice
     current_idx = max(remaining, key=lambda i: len(frameglasses[i]['tags']))
     remaining.remove(current_idx)
     ordered.append(frameglasses[current_idx])
@@ -82,7 +143,6 @@ def smart_ordering(frameglasses):
         candidates &= remaining
 
         if not candidates:
-            # Pick deterministically instead of random
             next_idx = min(remaining)
             remaining.remove(next_idx)
         else:
@@ -91,7 +151,6 @@ def smart_ordering(frameglasses):
             best_freq = float('inf')
 
             sample_size = min(500, len(candidates))
-            # Sort candidates for deterministic sampling
             sampled = random.sample(sorted(list(candidates)), sample_size)
             
             for idx in sampled:
@@ -101,7 +160,7 @@ def smart_ordering(frameglasses):
                 unique_nxt = len(next_tags - current_tags)
                 score = min(common, unique_cur, unique_nxt)
 
-                # Tie-breaker: prefer frames with less common tags (for diversity)
+                # Tie-breaker: prefer less common tags for diversity
                 freq_penalty = sum(tag_freq[t] for t in next_tags)
                 if score > best_score or (score == best_score and freq_penalty < best_freq):
                     best_score = score
@@ -117,6 +176,15 @@ def smart_ordering(frameglasses):
 
 
 def calculate_satisfaction_score(frameglasses):
+    """
+    Calculates total satisfaction score for ordering.
+    
+    Args:
+        frameglasses (list): Ordered frameglasses.
+    
+    Returns:
+        int: Total score (sum of transition scores).
+    """
     if len(frameglasses) < 2:
         return 0
 
@@ -134,7 +202,13 @@ def calculate_satisfaction_score(frameglasses):
 
 
 def write_output_file(frameglasses, output_path):
-    """Write output file in correct format."""
+    """
+    Writes ordered frameglasses to output file.
+    
+    Args:
+        frameglasses (list): Ordered frameglasses.
+        output_path (str): Output file path.
+    """
     dirname = os.path.dirname(output_path)
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -146,6 +220,16 @@ def write_output_file(frameglasses, output_path):
 
 
 def main(input_file, output_file):
+    """
+    Main execution function.
+    
+    Args:
+        input_file (str): Path to input file.
+        output_file (str): Path to output file.
+    
+    Returns:
+        int: Final satisfaction score.
+    """
     print(f"Reading: {input_file}")
     start_time = time.time()
     
