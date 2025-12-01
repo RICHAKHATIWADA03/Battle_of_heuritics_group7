@@ -3,7 +3,7 @@ import random
 import sys
 import os
 
-DEFAULT_INPUT_PATH = "Data/10_computable_moments.txt"
+DEFAULT_INPUT_PATH = "Battle_of_heuristics_group_7/Data/10_computable_moments.txt"
 RANDOM_SEED = 42
 
 
@@ -306,9 +306,8 @@ def main(input_file, output_file, num_attempts=5):
     """
     Main execution function for the frameglass ordering algorithm.
     """
-    print("=" * 60)
-    print("Multi-Start Greedy Algorithm")
-    print("=" * 60)
+    print("\nMulti-Start Greedy Algorithm\n")
+  
     print(f"Reading: {input_file}")
     start_time = time.time()
     
@@ -329,13 +328,11 @@ def main(input_file, output_file, num_attempts=5):
     score = calculate_global_score(ordered_frames)
     elapsed = time.time() - start_time
     
-    print(f"\n{'='*60}")
+    print(f"Time taken: {elapsed:.2f} seconds\n")
     print(f"Score: {score:,}")
-    print(f"Time taken: {elapsed:.2f} seconds")
-    print(f"{'='*60}")
-    
+
     print(f"\nWriting: {output_file}")
- 
+
     write_output(output_file, ordered_frames)
     print("Done!\n")
     
@@ -355,7 +352,7 @@ if __name__ == '__main__':
      
         base_name = os.path.basename(input_file)
         name_without_ext = os.path.splitext(base_name)[0]
-        output_file = f"./Outputs/submission_{name_without_ext}.txt"
+        output_file = f"Battle_of_heuristics_group_7/Outputs/submission_{name_without_ext}.txt"
 
     if len(sys.argv) >= 4:
         num_attempts = int(sys.argv[3])
