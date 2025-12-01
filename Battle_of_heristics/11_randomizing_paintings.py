@@ -4,7 +4,7 @@ import sys
 import os
 from collections import defaultdict, Counter
 
-DEFAULT_INPUT_PATH = "Data/11_randomizing_paintings.txt"
+DEFAULT_INPUT_PATH = "Battle_of_heuristics_group_7/Data/11_randomizing_paintings.txt"
 RANDOM_SEED = 42
 
 
@@ -550,9 +550,9 @@ def main(input_file, output_file):
     score = calculate_global_score(ordered_frames)
     elapsed = time.time() - start_time
     
-    print(f"\nScore: {score:,}")
+    
     print(f"Time taken: {elapsed:.2f} seconds")
-    print(f"{'='*60}")
+    print(f"\nScore: {score:,}\n")
     
     print(f"\nWriting: {output_file}")
     write_output(output_file, ordered_frames)
@@ -568,6 +568,6 @@ if __name__ == '__main__':
     else:
         input_file = DEFAULT_INPUT_PATH if len(sys.argv) < 2 else sys.argv[1]
         name_without_ext = os.path.splitext(os.path.basename(input_file))[0]
-        output_file = f"./Outputs/submission_{name_without_ext}.txt"
+        output_file = f"Battle_of_heuristics_group_7/Outputs/submission_{name_without_ext}.txt"
 
     main(input_file, output_file)
